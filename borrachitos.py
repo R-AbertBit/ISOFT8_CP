@@ -59,7 +59,7 @@ def ejecutar_ciclo(num_ciclo, acciones):
 
         elif accion == "A drinking" or accion == "Cantando la troka":
             print(f'{nombre} "{accion}"')
-            time.sleep(0.5)
+            time.sleep(1.3)
 
     # Segunda pasada: llorar
     for nombre in nombres:
