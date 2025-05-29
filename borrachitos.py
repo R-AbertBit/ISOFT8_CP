@@ -1,153 +1,89 @@
 import time
-import random
 
 nombres = ["Angel", "Brayan", "Ramiro", "Jaracuaro", "Zuñiga"]
-acciones_libres = ["A drinking", "Cantando la troka"]
-acciones_exclusivas = [
-    "Llama a la ex para suplicarle que regresen",
-    "Llora porque le colgó la ex",
-    "Entra al baño",
-    "Sale del baño y le dice a {name} que ya no chille y que ¡Pistie!"
+
+# Acciones por ciclo, cada lista es un ciclo
+# Cada acción puede ser: 
+# - "A drinking"
+# - "Cantando la troka"
+# - "llama_ex"
+# - "baño"
+acciones_ciclos = [
+    ["A drinking"] * 5,
+    ["llama_ex", "A drinking", "baño", "Cantando la troka", "Cantando la troka"],
+    ["Cantando la troka", "llama_ex", "A drinking", "baño", "Cantando la troka"],
+    ["Cantando la troka", "Cantando la troka", "llama_ex", "A drinking", "baño"],
+    ["baño", "Cantando la troka", "Cantando la troka", "llama_ex", "A drinking"],
+    ["A drinking", "baño", "Cantando la troka", "Cantando la troka", "llama_ex"],
 ]
 
-# Cada borracho tendrá una cola de acciones
-colas_acciones = {
-    1: [
-        ["A drinking"] * 5,
-        [
-            "Llama a la ex para suplicarle que regresen",
-            "A drinking",
-            "Entra al baño",
-            "Cantando la troka",
-            "Cantando la troka",
-            "Llora porque le colgó la ex",
-            "Sale del baño y le dice a Angel que ya no chille y que ¡Pistie!"
-        ],
-        [
-            "Cantando la troka",
-            "Llama a la ex para suplicarle que regresen",
-            "A drinking",
-            "Entra al baño",
-            "Cantando la troka",
-            "Llora porque le colgó la ex",
-            "Sale del baño y le dice a Brayan que ya no chille y que ¡Pistie!"
-        ],
-        [
-            "Cantando la troka",
-            "Cantando la troka",
-            "Llama a la ex para suplicarle que regresen",
-            "A drinking",
-            "Entra al baño",
-            "Llora porque le colgó la ex",
-            "Sale del baño y le dice a Ramiro que ya no chille y que ¡Pistie!"
-        ],
-        [
-            "Entra al baño",
-            "Cantando la troka",
-            "Cantando la troka",
-            "Llama a la ex para suplicarle que regresen",
-            "A drinking",
-            "Llora porque le colgó la ex",
-            "Sale del baño y le dice a Jaracuaro que ya no chille y que ¡Pistie!"
-        ],
-        [
-            "A drinking",
-            "Entra al baño",
-            "Cantando la troka",
-            "Cantando la troka",
-            "Llama a la ex para suplicarle que regresen",
-            "Llora porque le colgó la ex",
-            "Sale del baño y le dice a Zuñiga que ya no chille y que ¡Pistie!"
-        ]
-    ]
+# Estados por persona
+estado_usuarios = {
+    nombre: {
+        "accion": None,
+        "espera_llorar": False,
+        "espera_salir_baño": False,
+        "quien_llora": None
+    }
+    for nombre in nombres
 }
 
-# Reorganizamos las acciones para acceder por ciclo
-ciclos = [
-    ["A drinking"] * 5,
-    [
-        "Llama a la ex para suplicarle que regresen",
-        "A drinking",
-        "Entra al baño",
-        "Cantando la troka",
-        "Cantando la troka",
-        "Llora porque le colgó la ex",
-        "Sale del baño y le dice a Angel que ya no chille y que ¡Pistie!"
-    ],
-    [
-        "Cantando la troka",
-        "Llama a la ex para suplicarle que regresen",
-        "A drinking",
-        "Entra al baño",
-        "Cantando la troka",
-        "Llora porque le colgó la ex",
-        "Sale del baño y le dice a Brayan que ya no chille y que ¡Pistie!"
-    ],
-    [
-        "Cantando la troka",
-        "Cantando la troka",
-        "Llama a la ex para suplicarle que regresen",
-        "A drinking",
-        "Entra al baño",
-        "Llora porque le colgó la ex",
-        "Sale del baño y le dice a Ramiro que ya no chille y que ¡Pistie!"
-    ],
-    [
-        "Entra al baño",
-        "Cantando la troka",
-        "Cantando la troka",
-        "Llama a la ex para suplicarle que regresen",
-        "A drinking",
-        "Llora porque le colgó la ex",
-        "Sale del baño y le dice a Jaracuaro que ya no chille y que ¡Pistie!"
-    ],
-    [
-        "A drinking",
-        "Entra al baño",
-        "Cantando la troka",
-        "Cantando la troka",
-        "Llama a la ex para suplicarle que regresen",
-        "Llora porque le colgó la ex",
-        "Sale del baño y le dice a Zuñiga que ya no chille y que ¡Pistie!"
-    ]
-]
+# Cola de llorones para que el que sale del baño sepa a quién decirle que pistie
+cola_llorones = []
 
-# Función que reparte acciones por ciclo
 def ejecutar_ciclo(num_ciclo, acciones):
     print(f"\nCiclo {num_ciclo}")
-    exclusivas_ocupadas = False
-    exclusivas_en_uso = set()
+    ocupados = {
+        "llama_ex": False,
+        "llora": False,
+        "baño": False,
+        "sale_baño": False
+    }
 
-    index = 0
-    cola_pendiente = []
+    # Primera pasada: acciones principales
+    for i, accion in enumerate(acciones):
+        nombre = nombres[i]
+        estado = estado_usuarios[nombre]
 
-    while index < len(acciones):
-        accion = acciones[index]
-        nombre_index = index if index < 5 else index - (len(acciones) - 5)
-        nombre = nombres[nombre_index % len(nombres)]
+        if accion == "llama_ex" and not ocupados["llama_ex"]:
+            print(f'{nombre} "Llama a la ex para suplicarle que regresen"')
+            time.sleep(0.8)
+            estado["espera_llorar"] = True
+            ocupados["llama_ex"] = True
 
-        # Si la acción es exclusiva, verificamos si hay otra ejecutándose
-        if any(ex in accion for ex in acciones_exclusivas):
-            if not exclusivas_ocupadas:
-                print(f'{nombre} "{accion}"')
-                exclusivas_ocupadas = True
-                exclusivas_en_uso.add(accion)
-                time.sleep(1)
-                exclusivas_ocupadas = False
-            else:
-                # Se espera a que termine otra exclusiva
-                cola_pendiente.append((index, accion, nombre))
-        else:
+        elif accion == "baño" and not ocupados["baño"]:
+            print(f'{nombre} "Entra al baño"')
+            time.sleep(0.8)
+            estado["espera_salir_baño"] = True
+            ocupados["baño"] = True
+
+        elif accion == "A drinking" or accion == "Cantando la troka":
             print(f'{nombre} "{accion}"')
             time.sleep(0.5)
-        index += 1
 
-    # Procesamos las pendientes exclusivas
-    for item in cola_pendiente:
-        _, accion, nombre = item
-        print(f'{nombre} "{accion}"')
-        time.sleep(1)
+    # Segunda pasada: llorar
+    for nombre in nombres:
+        estado = estado_usuarios[nombre]
+        if estado["espera_llorar"] and not ocupados["llora"]:
+            print(f'{nombre} "Llora porque le colgó la ex"')
+            time.sleep(0.8)
+            estado["espera_llorar"] = False
+            cola_llorones.append(nombre)
+            ocupados["llora"] = True
 
-# Ejecutamos los ciclos
-for i, ciclo in enumerate(ciclos):
-    ejecutar_ciclo(i + 1, ciclo)
+    # Tercera pasada: salir del baño
+    for nombre in nombres:
+        estado = estado_usuarios[nombre]
+        if estado["espera_salir_baño"] and not ocupados["sale_baño"]:
+            if cola_llorones:
+                quien_chilla = cola_llorones.pop(0)
+            else:
+                quien_chilla = "el compa"
+            print(f'{nombre} "Sale del baño y le dice a {quien_chilla} que ya no chille y que ¡Pistie!"')
+            time.sleep(0.8)
+            estado["espera_salir_baño"] = False
+            ocupados["sale_baño"] = True
+
+# Ejecutar todos los ciclos
+for i, acciones in enumerate(acciones_ciclos):
+    ejecutar_ciclo(i + 1, acciones)
