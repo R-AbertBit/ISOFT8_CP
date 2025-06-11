@@ -1,5 +1,6 @@
+# La libreria time permite darel tiempo de espera para la siguiente acción dentro del código
 import time
-#Aqui esta mi participación -commit-
+
 nombres = ["Angel", "Brayan", "Ramiro", "Jaracuaro", "Zuñiga"]
 bartender = "Bartender"
 
