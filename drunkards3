@@ -1,0 +1,56 @@
+import time
+import random
+
+# Definimos los 4 recursos del sistema
+def pedir_cerveza(nombre):
+    print(f"{nombre} está pidiendo cerveza...")
+    time.sleep(random.uniform(0.2, 0.6))
+    print(f"{nombre} terminó de pedir cerveza.")
+
+def rockola(nombre):
+    print(f"{nombre} está usando la rockola...")
+    time.sleep(random.uniform(0.2, 0.6))
+    print(f"{nombre} terminó con la rockola.")
+
+def cantar(nombre):
+    print(f"{nombre} está cantando 🎤.")
+    time.sleep(random.uniform(0.2, 0.5))
+
+def bailar(nombre):
+    print(f"{nombre} está bailando 💃🕺.")
+    time.sleep(random.uniform(0.2, 0.5))
+
+# Cada ciclo solo 1 persona del core correspondiente puede usar pedir_cerveza y rockola
+# Core1 (borrachitos) usa esos recursos en ciclos impares, Core2 (borrachitas) en pares
+
+# Simulamos los 6 procesos de cada core
+borrachitos = [f"Borrachito{i+1}" for i in range(6)]
+borrachitas = [f"Borrachita{i+1}" for i in range(6)]
+
+# Simulación de 5 ciclos
+for ciclo in range(1, 6):
+    print(f"\n--- Ciclo {ciclo} ---")
+
+    if ciclo % 2 == 1:
+        # Ciclos impares: Core1 accede a recursos exclusivos
+        core_actual = borrachitos
+        otro_core = borrachitas
+    else:
+        # Ciclos pares: Core2 accede a recursos exclusivos
+        core_actual = borrachitas
+        otro_core = borrachitos
+
+    # Elegimos aleatoriamente 1 proceso del core actual para usar pedir_cerveza y rockola
+    elegido = random.choice(core_actual)
+
+    # Acceso exclusivo a pedir_cerveza y rockola por un solo proceso del core correspondiente
+    pedir_cerveza(elegido)
+    rockola(elegido)
+
+    # Todos los borrachitos y borrachitas pueden cantar y bailar simultáneamente
+    for b in borrachitos + borrachitas:
+        cantar(b)
+    for b in borrachitos + borrachitas:
+        bailar(b)
+
+    time.sleep(1)  # Pequeña pausa entre ciclos
