@@ -1,6 +1,6 @@
 import time
 import random
-#Hola hola
+
 # Definimos los 4 recursos del sistema
 def pedir_cerveza(nombre):
     print(f"{nombre} está pidiendo cerveza...")
