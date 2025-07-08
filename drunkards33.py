@@ -36,7 +36,7 @@ for cycle in range(1, 6):
         current_core = drunk_guys
         other_core = drunk_girls
     else:
-        # Even cycles: Core2 has exclusive access to resources
+       
         current_core = drunk_girls
         other_core = drunk_guys
 
